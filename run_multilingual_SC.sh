@@ -126,11 +126,15 @@ run_job() {
   {
     # Convert LANG to lowercase for config
     LANG_LOWER=$(echo "$LANG" | tr '[:upper:]' '[:lower:]')
+    echo "  LANG_LOWER: $LANG_LOWER"
     
     # For these datasets, we need to pass the language as the split parameter
+    # sbatch --time=4:00:00 --ntasks=1 --cpus-per-task=4 --mem=120G --partition=gpu --gpus-per-node=a100:1 \
+    # --output=log/$MODEL/$DATASET/$LANG\_think\_$LANG_THINK\_$SEED\_$K.%j.out \
+    # --wrap="conda run -n RAGConsis \
     sbatch --job-name=gpu_job_xlarge \
     --partition=bch-gpu-xlarge --account=bch --gres=gpu:xlarge:4 --mem=256GB \
-    --time=24:00:00 --output=log/$MODEL/$DATASET/$LANG\_think\_$LANG_THINK\_$SEED\_$K.%j.out \
+    --time=8:00:00 --output=logs/$MODEL/$DATASET/$LANG\_think\_$LANG_THINK\_$SEED\_$K.%j.out \
     --wrap="conda run -n s2 \
     python run.py \
       --mname "${MODEL}" \

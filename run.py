@@ -6,6 +6,7 @@ import torch
 import argparse
 from tqdm import tqdm
 import json
+import jsonlines
 from transformers import AutoTokenizer
 from random import sample
 import re
