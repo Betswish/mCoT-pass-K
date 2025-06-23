@@ -93,14 +93,6 @@ run_job() {
   MODEL="$2"
   LANG="$3"
   LANG_THINK="$4"
-
-  echo "Starting inference with:"
-  echo "  Model: $MODEL"
-  echo "  Language: $LANG"
-  echo "  Language Think: $LANG_THINK"
-  echo "  Dataset: $DATASET"
-  echo "  Fields: $QUESTION_FIELD / $ANSWER_FIELD"
-  echo "  Split: $SPLIT"
   
   # Set max new tokens
   MAX_TOKENS=16834
@@ -115,6 +107,16 @@ run_job() {
 
   # Set K for pass@K evaluation
   K=32
+
+  echo "Starting inference with:"
+  echo "  Model: $MODEL"
+  echo "  Language: $LANG"
+  echo "  Language Think: $LANG_THINK"
+  echo "  Dataset: $DATASET"
+  echo "  Fields: $QUESTION_FIELD / $ANSWER_FIELD"
+  echo "  Split: $SPLIT"
+  echo "  Seed: $SEED"
+  echo "  K: $K"
 
   # Create a unique log file for this run
   LOG_FILE="logs/${MODEL//\//_}_${DATASET//\//_}_${LANG}_think_${LANG_THINK}_${SEED}.log"

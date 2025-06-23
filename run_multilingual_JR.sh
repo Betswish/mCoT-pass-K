@@ -93,14 +93,6 @@ run_job() {
   MODEL="$2"
   LANG="$3"
   LANG_THINK="$4"
-
-  echo "Starting inference with:"
-  echo "  Model: $MODEL"
-  echo "  Language: $LANG"
-  echo "  Language Think: $LANG_THINK"
-  echo "  Dataset: $DATASET"
-  echo "  Fields: $QUESTION_FIELD / $ANSWER_FIELD"
-  echo "  Split: $SPLIT"
   
   # Set max new tokens
   MAX_TOKENS=16834
@@ -116,6 +108,16 @@ run_job() {
   # Set K for pass@K evaluation
   K=32
 
+  echo "Starting inference with:"
+  echo "  Model: $MODEL"
+  echo "  Language: $LANG"
+  echo "  Language Think: $LANG_THINK"
+  echo "  Dataset: $DATASET"
+  echo "  Fields: $QUESTION_FIELD / $ANSWER_FIELD"
+  echo "  Split: $SPLIT"
+  echo "  Seed: $SEED"
+  echo "  K: $K"
+
   # Create a unique log file for this run
   LOG_FILE="logs/${MODEL//\//_}_${DATASET//\//_}_${LANG}_think_${LANG_THINK}_${SEED}.log"
   mkdir -p logs
@@ -130,7 +132,7 @@ run_job() {
     # --partition=bch-gpu-xlarge --account=bch --gres=gpu:xlarge:4 --mem=256GB \
     # --time=8:00:00 --output=logs/$MODEL/$DATASET/$LANG\_think\_$LANG_THINK\_$SEED\_$K.%j.out \
     # --wrap="conda run -n s2 \
-    sbatch --time=24:00:00 --ntasks=1 --cpus-per-task=4 --mem=120G --partition=gpu --gpus-per-node=a100:1 \
+    sbatch --time=4:00:00 --ntasks=1 --cpus-per-task=4 --mem=120G --partition=gpu --gpus-per-node=a100:1 \
     --output=log/$MODEL/$DATASET/$LANG\_think\_$LANG_THINK\_$SEED\_$K.%j.out \
     --wrap="conda run -n RAGConsis \
     python run.py \
