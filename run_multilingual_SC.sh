@@ -133,18 +133,17 @@ run_job() {
     --time=24:00:00 --output=log/$MODEL/$DATASET/$LANG\_think\_$LANG_THINK\_$SEED\_$K.%j.out \
     --wrap="conda run -n s2 \
     python run.py \
-      --mname "$MODEL" \
-      --lang "$LANG" \
-      --lang_think "$LANG_THINK" \
+      --mname "${MODEL}" \
+      --lang "${LANG}" \
+      --lang_think "${LANG_THINK}" \
       --dataset "${DATASET}" \
-      --question_field "$QUESTION_FIELD" \
+      --question_field "${QUESTION_FIELD}" \
       --answer_field "$ANSWER_FIELD" \
       --split "${LANG_LOWER}" \
-      --max_tokens "$MAX_TOKENS" \
+      --max_tokens "${MAX_TOKENS}" \
       --cache_dir "${CACHE_DIR}" \
-      --seed "$SEED" \
-      --K "$K" \
-      $TEST_MODE \
+      --seed "${SEED}" \
+      --K "${K}" \
     "
 
     echo "Completed inference for $DATASET with $MODEL in $LANG"
