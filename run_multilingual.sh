@@ -125,10 +125,10 @@ run_job() {
     LANG_LOWER=$(echo "$LANG" | tr '[:upper:]' '[:lower:]')
     
     # For these datasets, we need to pass the language as the split parameter
-    # sbatch --job-name=gpu_job_xlarge \
-    # --partition=bch-gpu-xlarge --account=bch --gres=gpu:xlarge:4 --mem=256GB \
-    # --time=8:00:00 --output=logs/$MODEL/$DATASET/$LANG\_think\_$LANG_THINK.%j.out \
-    # --wrap="conda run -n s2 \
+    sbatch --job-name=gpu_job_xlarge \
+    --partition=bch-gpu-xlarge --account=bch --gres=gpu:xlarge:4 --mem=256GB \
+    --time=8:00:00 --output=logs/$MODEL/$DATASET/$LANG\_think\_$LANG_THINK.%j.out \
+    --wrap="conda run -n s2 \
     python run.py \
       --mname "$MODEL" \
       --lang "$LANG" \
@@ -142,7 +142,7 @@ run_job() {
       --seed "$SEED" \
       --K "$K" \
       $TEST_MODE \
-      # "
+    "
 
     echo "Completed inference for $DATASET with $MODEL in $LANG"
     echo "----------------------------------------"
