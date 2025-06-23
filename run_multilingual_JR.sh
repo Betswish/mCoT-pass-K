@@ -141,7 +141,7 @@ run_job() {
       --lang_think "${LANG_THINK}" \
       --dataset "${DATASET}" \
       --question_field "${QUESTION_FIELD}" \
-      --answer_field "$ANSWER_FIELD" \
+      --answer_field "${ANSWER_FIELD}" \
       --split "${LANG_LOWER}" \
       --max_tokens "${MAX_TOKENS}" \
       --cache_dir "${CACHE_DIR}" \
