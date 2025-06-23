@@ -110,7 +110,8 @@ run_job() {
   # SEED=0 # Set 0 for forcing greedy decoding
 
   # Set cache directory
-  CACHE_DIR="/scratch/p313030/cache/"
+  # CACHE_DIR="/temp_work/ch225816/hf" # Cache dir 1
+  CACHE_DIR="/scratch/p313030/cache/" # Cache dir 2
 
   # Set K for pass@K evaluation
   K=32
@@ -125,10 +126,13 @@ run_job() {
     LANG_LOWER=$(echo "$LANG" | tr '[:upper:]' '[:lower:]')
     
     # For these datasets, we need to pass the language as the split parameter
-    sbatch --job-name=gpu_job_xlarge \
-    --partition=bch-gpu-xlarge --account=bch --gres=gpu:xlarge:4 --mem=256GB \
-    --time=8:00:00 --output=logs/$MODEL/$DATASET/$LANG\_think\_$LANG_THINK.%j.out \
-    --wrap="conda run -n s2 \
+    # sbatch --job-name=gpu_job_xlarge \
+    # --partition=bch-gpu-xlarge --account=bch --gres=gpu:xlarge:4 --mem=256GB \
+    # --time=8:00:00 --output=logs/$MODEL/$DATASET/$LANG\_think\_$LANG_THINK\_$SEED\_$K.%j.out \
+    # --wrap="conda run -n s2 \
+    sbatch --time=24:00:00 --ntasks=1 --cpus-per-task=4 --mem=120G --partition=gpu --gpus-per-node=a100:1 \
+    --output=log/$MODEL/$DATASET/$LANG\_think\_$LANG_THINK\_$SEED\_$K.%j.out \
+    --wrap="conda run -n RAGConsis \
     python run.py \
       --mname "$MODEL" \
       --lang "$LANG" \
