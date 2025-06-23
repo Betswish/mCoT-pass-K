@@ -61,7 +61,7 @@ LANGUAGES_THINK=(
 # Define datasets to use
 DATASETS=(
   # # AIME combined dataset
-  "shanchen/aime_combined:problem:answer"
+  "aime_combined:problem:answer"
 
   # # GPQA dataset
   "shanchen/gpqa_diamond_mc_multilingual:problem:solution"
