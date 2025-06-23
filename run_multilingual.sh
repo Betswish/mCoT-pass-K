@@ -16,46 +16,46 @@ done
 # Define models to use
 MODELS=(
   # Using VLLM
-  "deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B" 
+  # "deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B" 
   "deepseek-ai/DeepSeek-R1-Distill-Qwen-7B" 
-  "deepseek-ai/DeepSeek-R1-Distill-Llama-8B"
-  "deepseek-ai/DeepSeek-R1-Distill-Qwen-14B"
-  "deepseek-ai/DeepSeek-R1-Distill-Qwen-32B"
-  "deepseek-ai/DeepSeek-R1-Distill-Llama-70B"
+  # "deepseek-ai/DeepSeek-R1-Distill-Llama-8B"
+  # "deepseek-ai/DeepSeek-R1-Distill-Qwen-14B"
+  # "deepseek-ai/DeepSeek-R1-Distill-Qwen-32B"
+  # "deepseek-ai/DeepSeek-R1-Distill-Llama-70B"
 
-  'Skywork/Skywork-OR1-7B'
-  'Skywork/Skywork-OR1-32B'
+  # 'Skywork/Skywork-OR1-7B'
+  # 'Skywork/Skywork-OR1-32B'
 )
 
 # Define query languages for test
 LANGUAGES=(
-  "EN"
-  "FR"
-  "DE"
-  "ZH"
+  # "EN"
+  # "FR"
+  # "DE"
+  # "ZH"
   "JA"
-  "RU"
-  "ES"
+  # "RU"
+  # "ES"
   "SW"
-  "BN"
+  # "BN"
   "TE"
   "TH"
 )
 
 # Define languages for thinking
 LANGUAGES_THINK=(
-  # "default" # Default language for thinking, always same as query language
-  "EN"
-  "FR"
-  "DE"
-  "ZH"
-  "JA"
-  "RU"
-  "ES"
-  "SW"
-  "BN"
-  "TE"
-  "TH"
+  "default" # Default language for thinking, always same as query language
+  # "EN"
+  # "FR"
+  # "DE"
+  # "ZH"
+  # "JA"
+  # "RU"
+  # "ES"
+  # "SW"
+  # "BN"
+  # "TE"
+  # "TH"
 )
 
 # Define datasets to use
@@ -109,8 +109,14 @@ run_job() {
   SEED=2025
   # SEED=0 # Set 0 for forcing greedy decoding
 
+  # Set cache directory
+  CACHE_DIR="/scratch/p313030/cache/"
+
+  # Set K for pass@K evaluation
+  K=32
+
   # Create a unique log file for this run
-  LOG_FILE="logs/${MODEL//\//_}_${DATASET//\//_}_${LANG}_think_${LANG_THINK}.log"
+  LOG_FILE="logs/${MODEL//\//_}_${DATASET//\//_}_${LANG}_think_${LANG_THINK}_${SEED}.log"
   mkdir -p logs
   
   # Run the inference
@@ -132,8 +138,9 @@ run_job() {
       --answer_field "$ANSWER_FIELD" \
       --split "${LANG_LOWER}" \
       --max_tokens "$MAX_TOKENS" \
-      --cache_dir "/temp_work/ch225816/hf" \
+      --cache_dir "${CACHE_DIR}" \
       --seed "$SEED" \
+      --K "$K" \
       $TEST_MODE \
       # "
 

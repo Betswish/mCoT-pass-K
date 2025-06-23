@@ -260,17 +260,21 @@ def run(args):
         # Generate responses with vllm
         if 'ds-limo' in args.mname.lower():
             sampling_params = SamplingParams(
+                n=args.K,
                 temperature=0.6,
                 top_p=0.95,
                 max_tokens=args.max_tokens,
+                seed=args.seed,
             )
         elif 's1.1-limo' in args.mname.lower() or 'qwen2.5-7b' in args.mname.lower():
             stop_token_ids = tokenizer("<|im_end|>")["input_ids"]
             sampling_params = SamplingParams(
+                n=args.K,
                 temperature=0.6,
                 top_p=0.95,
                 max_tokens=args.max_tokens,
                 stop_token_ids=stop_token_ids,
+                seed=args.seed,
             )
         else:
             # Greedy decoding for Deepseek and Skywork models
@@ -278,6 +282,7 @@ def run(args):
                 temperature=1.0,
                 top_k=1,
                 max_tokens=args.max_tokens,
+                seed=args.seed,
             )
 
         if args.seed == 0:
@@ -286,6 +291,7 @@ def run(args):
                 temperature=1.0,
                 top_k=1,
                 max_tokens=args.max_tokens,
+                seed=args.seed,
             )
         responses = vmodel.generate(all_prompts, sampling_params, use_tqdm=True)
     
@@ -302,7 +308,7 @@ def run(args):
             field_response = 'response_hack'
         
         save_data[data_index][field_prompt] = response.prompt
-        save_data[data_index][field_response] = response.outputs[0].text
+        save_data[data_index][field_response] = [_outputs.text for _outputs in response.outputs]
     
     # Save results
     if not os.path.exists(save_dir):
@@ -326,7 +332,8 @@ def main():
     parser.add_argument("--mname", type=str, default="deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B", help="LLM name")
     parser.add_argument("--lang", type=str, default="EN", help="Language")
     parser.add_argument("--lang_think", type=str, default="default", help="Language for thinking")
-    parser.add_argument("--seed", type=int, default="2025", help="Seeds for generation")
+    parser.add_argument("--seed", type=int, default=2025, help="Seeds for generation")
+    parser.add_argument("--K", type=int, default=32, help="Pass@K value for evaluation")
     parser.add_argument("--cache_dir", type=str, default=None, help="Path to the cache directory")
     
     # Generation parameters
