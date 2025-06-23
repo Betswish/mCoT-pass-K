@@ -77,7 +77,7 @@ def load_dataset_data(dataset_name, question_field="problem", answer_field="answ
             # For GPQA dataset, we should use the language code as the split name
             # similar to how AIME dataset is handled
             print(f"Loading GPQA dataset with language split: {lang_split}")
-            dataset = load_dataset("gpqa_diamond_mc_multilingual", split=lang_split)
+            dataset = load_dataset("shanchen/gpqa_diamond_mc_multilingual", split=lang_split)
             raw_data = list(dataset)
         except Exception as e:
             print(f"Error loading GPQA dataset with split {lang_split}: {e}")
@@ -85,8 +85,8 @@ def load_dataset_data(dataset_name, question_field="problem", answer_field="answ
     elif dataset_name.startswith("aime_combined"):
         lang_split = split.lower()
         try:
-            aime24 = load_dataset("aime_2024_multilingual", split=lang_split)
-            aime25 = load_dataset("aime_2025_multilingual", split=lang_split)
+            aime24 = load_dataset("shanchen/aime_2024_multilingual", split=lang_split)
+            aime25 = load_dataset("shanchen/aime_2025_multilingual", split=lang_split)
             raw_data = list(aime24) + list(aime25)
         except Exception as e:
             print(f"Error loading AIME dataset with split {lang_split}: {e}")
