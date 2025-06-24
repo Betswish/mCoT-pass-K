@@ -309,7 +309,7 @@ def run(args):
             field_response = 'response_hack'
         
         save_data[data_index][field_prompt] = response.prompt
-        save_data[data_index][field_response] = [response.outputs[i].text for _i in range(args.K)]
+        save_data[data_index][field_response] = [response.outputs[_i].text for _i in range(args.K)]
     
     # Save results
     if not os.path.exists(save_dir):
