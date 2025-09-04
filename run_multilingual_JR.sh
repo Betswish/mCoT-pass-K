@@ -25,6 +25,7 @@ MODELS=(
 
   # 'Skywork/Skywork-OR1-7B'
   # 'Skywork/Skywork-OR1-32B'
+  
 )
 
 # Define query languages for test
@@ -36,10 +37,10 @@ LANGUAGES=(
   "JA"
   # "RU"
   # "ES"
-  "SW"
+  # "SW"
   # "BN"
-  "TE"
-  "TH"
+  # "TE"
+  # "TH"
 )
 
 # Define languages for thinking
@@ -64,10 +65,10 @@ DATASETS=(
   "aime_combined:problem:answer"
 
   # # GPQA dataset
-  "shanchen/gpqa_diamond_mc_multilingual:problem:solution"
+  # "shanchen/gpqa_diamond_mc_multilingual:problem:solution"
   
   # # MGSM dataset
-  "juletxara/mgsm:question:answer_number:test"
+  # "juletxara/mgsm:question:answer_number:test"
 
   # # (Not used) AIW hard multilingual dataset
   # "shanchen/aiw_hard_multilingual:problem:answer"

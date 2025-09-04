@@ -11,10 +11,22 @@ from transformers import AutoTokenizer
 from random import sample
 import re
 from dotenv import load_dotenv
+from huggingface_hub import snapshot_download
 
 
 from vllm import LLM as VLLM
 from vllm import SamplingParams
+from vllm.lora.request import LoRARequest
+
+lora_mapping = {
+    "shanchen/math-500-jpsft-spanish-lora": ("shanchen/ds-limo-ja-500", "ES"),
+    "shanchen/math-500-frsft-spanish-lora": ("shanchen/ds-limo-fr-250", "ES"),
+    "shanchen/math-500-base-spanish-lora": ("deepseek-ai/DeepSeek-R1-Distill-Qwen-7B", "ES"),
+    "shanchen/math-500-jpsft-french-lora": ("shanchen/ds-limo-ja-500", "FR"),
+    "shanchen/math-500-sft-french-lora": ("shanchen/ds-limo-fr-250", "FR"),
+    "shanchen/math-500-base-french-lora": ("deepseek-ai/DeepSeek-R1-Distill-Qwen-7B", "FR"),
+    "shanchen/math-500-japanese-lora": ("shanchen/ds-limo-ja-full", "JA"),
+}
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
@@ -170,12 +182,15 @@ def run(args):
         hack_prefix = json.load(f)
     f.close()
 
+    raw_mname, lang_split = lora_mapping[args.mname]
+    lora_path = snapshot_download(repo_id=args.mname, cache_dir=cache_dir)
+
     # Load dataset
     data = load_dataset_data(
         args.dataset, 
         question_field=args.question_field, 
         answer_field=args.answer_field,
-        split=args.split,
+        split=lang_split,
         test_mode=args.test_mode,
         max_test_examples=args.max_test_examples
     )
@@ -190,7 +205,7 @@ def run(args):
     extra_kw = {"download_dir": cache_dir}
     print(f"Running on {torch.cuda.device_count()} GPUs")
     vmodel = VLLM(
-            model=args.mname,
+            model=raw_mname,
             tensor_parallel_size=torch.cuda.device_count(),
             gpu_memory_utilization=0.60,
             dtype=torch.bfloat16,
@@ -202,7 +217,7 @@ def run(args):
             disable_custom_all_reduce=True,
             **extra_kw
             )
-    
+
     save_data = []
     
     # Prepare all prompts
@@ -221,10 +236,7 @@ def run(args):
         save_data.append(meta_info)
 
         # thinking language
-        if args.lang_think == 'default':
-            lang_think = args.lang
-        else:
-            lang_think = args.lang_think
+        lang_think = lang_split
 
         # make the two prompts, general and hacked
         content = instructions[lang_think][1].format(ins['problem'])
@@ -286,7 +298,12 @@ def run(args):
                 max_tokens=args.max_tokens,
                 seed=args.seed,
             )
-        responses = vmodel.generate(all_prompts, sampling_params, use_tqdm=True)
+        responses = vmodel.generate(
+            all_prompts, 
+            sampling_params,
+            use_tqdm=True,
+            lora_request=LoRARequest("adapter", 1, lora_path)
+            )
     
     # Process responses
     for i, response in enumerate(responses):
