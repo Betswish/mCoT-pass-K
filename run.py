@@ -150,7 +150,6 @@ def run(args):
         args: Command-line arguments
     """
     cache_dir = args.cache_dir if args.cache_dir else os.getenv("TMPDIR") 
-    lang = args.lang
     save_dir = f'outputs_{args.seed}/'
     
     # Print test mode status

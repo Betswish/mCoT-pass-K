@@ -162,7 +162,6 @@ def run(args):
         args: Command-line arguments
     """
     cache_dir = args.cache_dir if args.cache_dir else os.getenv("TMPDIR") 
-    lang = args.lang
     save_dir = f'outputs_{args.seed}/'
     
     # Print test mode status
@@ -327,7 +326,7 @@ def run(args):
     # Create a more descriptive filename that includes the dataset
     dataset_name = args.dataset.split('/')[-1] if '/' in args.dataset else args.dataset
     test_suffix = "_test" if args.test_mode else ""
-    output_filename = f"{save_dir}{args.mname.split('/')[-1]}_{dataset_name}_{args.lang}_think_{args.lang_think}_{args.K}{test_suffix}.json"
+    output_filename = f"{save_dir}{args.mname.split('/')[-1]}_{dataset_name}_{lang_split}_think_{lang_split}_{args.K}{test_suffix}.json"
     
     with open(output_filename, 'w', encoding='utf-8') as f:
         json.dump(save_data, f, ensure_ascii=True, sort_keys=False) # no indent for saving storage

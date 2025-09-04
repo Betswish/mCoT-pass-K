@@ -37,11 +37,12 @@ MODELS=(
 
 # Define query languages for test
 LANGUAGES=(
+  "default" # Placeholder, currently not used in run_lora.py
   # "EN"
   # "FR"
   # "DE"
   # "ZH"
-  "JA"
+  # "JA"
   # "RU"
   # "ES"
   # "SW"
