@@ -16,6 +16,8 @@ from dotenv import load_dotenv
 from vllm import LLM as VLLM
 from vllm import SamplingParams
 
+load_dotenv(dotenv_path='.env')
+
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 def make_prompt(tokenizer, instruction, content, hack=False):

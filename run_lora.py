@@ -1,5 +1,7 @@
 import os
 os.environ["VLLM_WORKER_MULTIPROC_METHOD"] = "spawn"
+os.environ["HF_HUB_ENABLE_XET"] = "0"          # 关键：禁用 xet
+os.environ.setdefault("HF_HUB_ENABLE_HF_TRANSFER", "1")  # 可选：更快的 HTTP 传输（需安装 hf_transfer）
 
 from datasets import load_dataset
 import torch
@@ -182,8 +184,10 @@ def run(args):
     f.close()
 
     raw_mname, lang_split = lora_mapping[args.mname]
+    print(raw_mname, lang_split)
+    print(args.mname)
     lora_path = snapshot_download(repo_id=args.mname, cache_dir=cache_dir)
-
+    
     # Load dataset
     data = load_dataset_data(
         args.dataset, 
@@ -214,6 +218,7 @@ def run(args):
             max_model_len=args.max_tokens,
             seed=args.seed,
             disable_custom_all_reduce=True,
+            enable_lora=True,
             **extra_kw
             )
 
@@ -248,16 +253,14 @@ def run(args):
             prompt = instruction + content
 
         # Manually add generation template with <think> tag
-        if 'deepseek' in args.mname.lower() or 'skywork' in args.mname.lower() or 'ds-limo' in args.mname.lower():
-            prompt += "<｜Assistant｜><think>\n"
-        elif 'qwen3' in args.mname.lower():
+        if 'qwen3' in args.mname.lower():
             prompt += "<|im_start|>assistant\n<think>\n"
         elif 's1.1-limo' in args.mname.lower() or 'qwen2.5-7b' in args.mname.lower():
             # Overwrite the prompt
             prompt = "<|im_start|>system\nYou are Qwen, created by Alibaba Cloud. You are a helpful assistant.<|im_end|>\n<|im_start|>user\n"\
                     + content + "<|im_end|>\n<|im_start|>assistant\n"
         else:
-            raise ValueError(f"Unsupported model for vllm when manually adding <think> tag: {args.mname}")
+            prompt += "<｜Assistant｜><think>\n"
         prompt_hack = prompt + f"{hack_prefix[lang_think]}"
 
         
