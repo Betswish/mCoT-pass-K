@@ -99,9 +99,11 @@ def load_dataset_data(dataset_name, question_field="problem", answer_field="answ
     elif dataset_name.startswith("aime_combined"):
         lang_split = split.lower()
         try:
-            aime24 = load_dataset("shanchen/aime_2024_multilingual", split=lang_split)
+            # aime24 = load_dataset("shanchen/aime_2024_multilingual", split=lang_split)
+            # aime25 = load_dataset("shanchen/aime_2025_multilingual", split=lang_split)
+            # raw_data = list(aime24) + list(aime25)
             aime25 = load_dataset("shanchen/aime_2025_multilingual", split=lang_split)
-            raw_data = list(aime24) + list(aime25)
+            raw_data = list(aime25)
         except Exception as e:
             print(f"Error loading AIME dataset with split {lang_split}: {e}")
             raise
