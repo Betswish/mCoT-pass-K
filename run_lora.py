@@ -28,6 +28,7 @@ lora_mapping = {
     "shanchen/math-500-sft-french-lora": ("shanchen/ds-limo-fr-250", "FR"),
     "shanchen/math-500-base-french-lora": ("deepseek-ai/DeepSeek-R1-Distill-Qwen-7B", "FR"),
     "shanchen/math-500-japanese-lora": ("shanchen/ds-limo-ja-full", "JA"),
+    "shanchen/math-500-base-japanese-lora": ("deepseek-ai/DeepSeek-R1-Distill-Qwen-7B", "JA"),
 }
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -304,7 +305,10 @@ def run(args):
                 max_tokens=args.max_tokens,
                 seed=args.seed,
             )
+        num_exist = -1
+        if os.path.exists(output_filename): num_exist = sum(1 for _ in open(output_filename))
         for data_index, each_prompt in enumerate(all_prompts):
+            if data_index < num_exist: continue # skip existing results
             responses = vmodel.generate(
                 [each_prompt],
                 sampling_params,

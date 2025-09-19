@@ -33,39 +33,17 @@ MODELS=(
   "shanchen/math-500-sft-french-lora"
   "shanchen/math-500-base-french-lora"
   "shanchen/math-500-japanese-lora"
-  "shanchen/math-500-base-japanese-lora"
+  # "shanchen/math-500-base-japanese-lora"
 )
 
 # Define query languages for test
 LANGUAGES=(
   "default" # Placeholder, currently not used in run_lora.py
-  # "EN"
-  # "FR"
-  # "DE"
-  # "ZH"
-  # "JA"
-  # "RU"
-  # "ES"
-  # "SW"
-  # "BN"
-  # "TE"
-  # "TH"
 )
 
 # Define languages for thinking
 LANGUAGES_THINK=(
   "default" # Default language for thinking, always same as query language
-  # "EN"
-  # "FR"
-  # "DE"
-  # "ZH"
-  # "JA"
-  # "RU"
-  # "ES"
-  # "SW"
-  # "BN"
-  # "TE"
-  # "TH"
 )
 
 # Define datasets to use
