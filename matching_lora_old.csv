@@ -1,0 +1,14 @@
+shanchen/math-500-jpsft-spanish-lora	aime_combined	ES	ES	100.0%	98.33%
+shanchen/math-500-frsft-spanish-lora	aime_combined	ES	ES	98.33%	100.0%
+shanchen/math-500-base-spanish-lora	aime_combined	ES	ES	96.67%	100.0%
+shanchen/math-500-jpsft-french-lora	aime_combined	FR	FR	98.33%	96.67%
+shanchen/math-500-sft-french-lora	aime_combined	FR	FR	100.0%	100.0%
+shanchen/math-500-base-french-lora	aime_combined	FR	FR	98.33%	100.0%
+shanchen/math-500-japanese-lora	aime_combined	JA	JA	88.33%	100.0%
+shanchen/math-500-jpsft-spanish-lora	gpqa_diamond_mc_multilingual	ES	ES	95.45%	94.95%
+shanchen/math-500-frsft-spanish-lora	gpqa_diamond_mc_multilingual	ES	ES	97.47%	98.48%
+shanchen/math-500-base-spanish-lora	gpqa_diamond_mc_multilingual	ES	ES	100.0%	98.48%
+shanchen/math-500-jpsft-french-lora	gpqa_diamond_mc_multilingual	FR	FR	98.48%	97.98%
+shanchen/math-500-sft-french-lora	gpqa_diamond_mc_multilingual	FR	FR	98.99%	98.99%
+shanchen/math-500-base-french-lora	gpqa_diamond_mc_multilingual	FR	FR	94.44%	98.99%
+shanchen/math-500-japanese-lora	gpqa_diamond_mc_multilingual	JA	JA	86.36%	99.49%

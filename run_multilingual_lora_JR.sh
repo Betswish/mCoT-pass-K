@@ -26,7 +26,7 @@ MODELS=(
   # 'Skywork/Skywork-OR1-7B'
   # 'Skywork/Skywork-OR1-32B'
 
-  "shanchen/math-500-jpsft-spanish-lora"
+  # "shanchen/math-500-jpsft-spanish-lora"
   "shanchen/math-500-frsft-spanish-lora"
   "shanchen/math-500-base-spanish-lora"
   "shanchen/math-500-jpsft-french-lora"
@@ -141,7 +141,7 @@ run_job() {
     # --partition=bch-gpu-xlarge --account=bch --gres=gpu:xlarge:4 --mem=256GB \
     # --time=8:00:00 --output=logs/$MODEL/$DATASET/$LANG\_think\_$LANG_THINK\_$SEED\_$K.%j.out \
     # --wrap="conda run -n s2 \
-    sbatch --time=4:00:00 --ntasks=1 --cpus-per-task=4 --mem=120G --partition=gpu --gpus-per-node=a100:2 \
+    sbatch --time=4:00:00 --ntasks=1 --cpus-per-task=4 --mem=120G --partition=gpu --gpus-per-node=a100:1 \
     --output=log/$MODEL/$DATASET/$LANG\_think\_$LANG_THINK\_$SEED\_$K.%j.out \
     --wrap="conda run -n RAGConsis \
     python run_lora.py \

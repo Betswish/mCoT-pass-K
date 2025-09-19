@@ -167,7 +167,9 @@ def run(args):
     """
     cache_dir = args.cache_dir if args.cache_dir else os.getenv("TMPDIR") 
     save_dir = f'outputs_{args.seed}/'
-    
+    if not os.path.exists(save_dir):
+        os.makedirs(save_dir)
+
     # Print test mode status
     if args.test_mode:
         print(f"Running in TEST MODE - will only process up to {args.max_test_examples} examples")
@@ -230,7 +232,7 @@ def run(args):
     all_prompts = []
     all_prompt_types = []  # To track whether each prompt is normal or hack
     
-    for index, ins in enumerate(data):
+    for index, ins in enumerate(tqdm(data)):
         # store common info
         meta_info = {"index": index, "answer": ins.get("answer")}
         
@@ -269,8 +271,8 @@ def run(args):
         # Add prompts to the list
         all_prompts.append(prompt)
         all_prompt_types.append("normal")
-        all_prompts.append(prompt_hack)
-        all_prompt_types.append("hack")
+        # all_prompts.append(prompt_hack)
+        # all_prompt_types.append("hack")
     
     # Process prompts
     if use_vllm:
@@ -302,42 +304,32 @@ def run(args):
                 max_tokens=args.max_tokens,
                 seed=args.seed,
             )
-        responses = vmodel.generate(
-            all_prompts, 
-            sampling_params,
-            use_tqdm=True,
-            lora_request=LoRARequest("adapter", 1, lora_path)
-            )
-    
-    # Process responses
-    for i, response in enumerate(responses):
-        data_index = i // 2  # Each data item has 2 prompts (normal and hack)
-        prompt_type = all_prompt_types[i]
-        
-        if prompt_type == "normal":
+        for data_index, each_prompt in enumerate(all_prompts):
+            responses = vmodel.generate(
+                [each_prompt],
+                sampling_params,
+                use_tqdm=True,
+                lora_request=LoRARequest("adapter", 1, lora_path)
+                )
+            response = responses[0]
+            
             field_prompt = 'prompt'
             field_response = 'response'
-        else:  # hack
-            field_prompt = 'prompt_hack'
-            field_response = 'response_hack'
-        
-        save_data[data_index][field_prompt] = response.prompt
-        save_data[data_index][field_response] = [response.outputs[_i].text for _i in range(args.K)]
+            
+            save_data[data_index][field_prompt] = response.prompt
+            save_data[data_index][field_response] = [response.outputs[_i].text for _i in range(args.K)]
     
-    # Save results
-    if not os.path.exists(save_dir):
-        os.makedirs(save_dir)
+            # Create a more descriptive filename that includes the dataset
+            dataset_name = args.dataset.split('/')[-1] if '/' in args.dataset else args.dataset
+            test_suffix = "_test" if args.test_mode else ""
+            output_filename = f"{save_dir}{args.mname.split('/')[-1]}_{dataset_name}_{lang_split}_think_{lang_split}_{args.K}{test_suffix}.json"
 
-    # Create a more descriptive filename that includes the dataset
-    dataset_name = args.dataset.split('/')[-1] if '/' in args.dataset else args.dataset
-    test_suffix = "_test" if args.test_mode else ""
-    output_filename = f"{save_dir}{args.mname.split('/')[-1]}_{dataset_name}_{lang_split}_think_{lang_split}_{args.K}{test_suffix}.json"
-    
-    with open(output_filename, 'w', encoding='utf-8') as f:
-        json.dump(save_data, f, ensure_ascii=True, sort_keys=False) # no indent for saving storage
-        #json.dump(save_data, f, ensure_ascii=True, indent=4, sort_keys=False)
-    
-    print(f"Results saved to {output_filename}")
+            # save as jsonlines
+            with open(output_filename, 'a', encoding='utf-8') as f:
+                f.write(json.dumps(save_data[data_index], ensure_ascii=True) + "\n")
+                f.flush()
+                os.fsync(f.fileno())
+                print(f"No {data_index}: Results saved to {output_filename}")
 
 
 def main():

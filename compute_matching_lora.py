@@ -8,6 +8,7 @@ from transformers import AutoModelForSequenceClassification, AutoTokenizer
 from langdetect import DetectorFactory
 DetectorFactory.seed = 0
 from langdetect import detect_langs
+from pass_at_k import pass_at_k
 
 lora_mapping = {
     "shanchen/math-500-jpsft-spanish-lora": ("shanchen/ds-limo-ja-500", "ES"),
@@ -30,7 +31,7 @@ mnames = [
     ]
 
 datasets = [
-    # 'aime_combined', 
+    'aime_combined', 
     'gpqa_diamond_mc_multilingual', 
     # 'mgsm'
     ]
@@ -51,54 +52,49 @@ def detect_language(text):
     except Exception as e:
         return None, None
 
-def compute_matching(output_dir, mname, lang, dataset, lang_think, store_answers, add_scores, reward_model_name):
+def compute_matching(output_dir, mname, lang, dataset, lang_think, K):
     # Load reward model if scoring is enabled
     rm = None
     rm_tokenizer = None
-    device = "cuda:0" if torch.cuda.is_available() else "cpu" # Use CUDA if available
 
     matching_rate_norm = 0
-    matching_rate_hack = 0
-    fpath = f"{output_dir}/{mname.split('/')[1]}_{dataset}_{lang}_think_{lang_think}_1.json"
+    fpath = f"{output_dir}/{mname.split('/')[1]}_{dataset}_{lang}_think_{lang_think}_32.json"
+    instances = []
     with open(fpath, 'r') as f:
-        instances = json.load(f)
+        for line in f:
+            if line.strip(): instances.append(json.loads(line)) # skip empty lines
     f.close()
 
     for ins in tqdm(instances):
-        response = ins['response'][0]
-        response_hack = ins['response_hack'][0]
-        gold_answer = str(ins['answer']) if 'gpqa' not in dataset else ins['answer'][-2:-1]
+        responses = ins['response']
+        for response in responses:
+            gold_answer = str(ins['answer']) if 'gpqa' not in dataset else ins['answer'][-2:-1]
 
-        lang_norm_list, lang_norm = detect_language(response.split('</think>')[0])
-        lang_hack_list, lang_hack = detect_language(response_hack.split('</think>')[0])
+            lang_norm_list, lang_norm = detect_language(response.split('</think>')[0])
 
-        # Calculate scores if enabled
-        matching_rate_norm += (lang_norm == lang_think.lower())
-        matching_rate_hack += (lang_hack == lang_think.lower())
+            # Calculate scores if enabled
+            matching_rate_norm += (lang_norm == lang_think.lower())
 
     with open('matching_lora.csv', 'a') as f:
-        f.write(f"{mname}\t{dataset}\t{lang}\t{lang_think}\t{round(100*matching_rate_norm/len(instances),2)}%\t{round(100*matching_rate_hack/len(instances),2)}%\n")
+        f.write(f"{mname}\t{dataset}\t{lang}\t{lang_think}\t{round(100*matching_rate_norm/(32*len(instances)),2)}%\n")
     f.close()
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     # Model parameters
-    parser.add_argument("--output_dir", type=str, default="outputs_2025", help="Loading from which directory")
-    parser.add_argument("--store", action="store_true", help="Store extracted answers in JSON files")
-    parser.add_argument("--add_scores", action="store_true", help="Add reward model scores to JSON files")
-    parser.add_argument("--reward_model_name", type=str, default="Skywork/Skywork-Reward-Gemma-2-27B-v0.2", help="Reward model name")
+    parser.add_argument("--output_dir", type=str, default="outputs_2026", help="Loading from which directory")
+    parser.add_argument("--K", type=int, default="1", help="Pass@K")
 
     args = parser.parse_args()
 
     output_dir        = args.output_dir
-    store_answers     = args.store
-    add_scores        = args.add_scores
-    reward_model_name = args.reward_model_name
 
 
     for dataset in datasets:
         for mname in mnames:
             _, lang = lora_mapping[mname]
             _, lang_think = lora_mapping[mname]
-            compute_matching(output_dir, mname, lang, dataset, lang_think, store_answers, add_scores, reward_model_name)
-
+            try:
+                compute_matching(output_dir, mname, lang, dataset, lang_think, args.K)
+            except Exception as e:
+                continue
