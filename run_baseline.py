@@ -87,9 +87,12 @@ def load_dataset_data(dataset_name, question_field="problem", answer_field="answ
     elif dataset_name.startswith("aime_combined"):
         lang_split = split.lower()
         try:
-            aime24 = load_dataset("shanchen/aime_2024_multilingual", split=lang_split)
+            # aime24 = load_dataset("shanchen/aime_2024_multilingual", split=lang_split)
+            # aime25 = load_dataset("shanchen/aime_2025_multilingual", split=lang_split)
+            # raw_data = list(aime24) + list(aime25)
+            # aime24 = load_dataset("shanchen/aime_2024_multilingual", split=lang_split)
             aime25 = load_dataset("shanchen/aime_2025_multilingual", split=lang_split)
-            raw_data = list(aime24) + list(aime25)
+            raw_data = list(aime25)
         except Exception as e:
             print(f"Error loading AIME dataset with split {lang_split}: {e}")
             raise
@@ -153,7 +156,9 @@ def run(args):
     """
     cache_dir = args.cache_dir if args.cache_dir else os.getenv("TMPDIR") 
     save_dir = f'outputs_{args.seed}/'
-    
+    if not os.path.exists(save_dir):
+        os.makedirs(save_dir)
+
     # Print test mode status
     if args.test_mode:
         print(f"Running in TEST MODE - will only process up to {args.max_test_examples} examples")
@@ -254,8 +259,8 @@ def run(args):
         # Add prompts to the list
         all_prompts.append(prompt)
         all_prompt_types.append("normal")
-        all_prompts.append(prompt_hack)
-        all_prompt_types.append("hack")
+        # all_prompts.append(prompt_hack)
+        # all_prompt_types.append("hack")
     
     # Process prompts
     if use_vllm:
@@ -287,37 +292,36 @@ def run(args):
                 max_tokens=args.max_tokens,
                 seed=args.seed,
             )
-        responses = vmodel.generate(all_prompts, sampling_params, use_tqdm=True)
-    
-    # Process responses
-    for i, response in enumerate(responses):
-        data_index = i // 2  # Each data item has 2 prompts (normal and hack)
-        prompt_type = all_prompt_types[i]
         
-        if prompt_type == "normal":
+        # Create a more descriptive filename that includes the dataset
+        dataset_name = args.dataset.split('/')[-1] if '/' in args.dataset else args.dataset
+        test_suffix = "_test" if args.test_mode else ""
+        output_filename = f"{save_dir}{args.mname.split('/')[-1]}_{dataset_name}_{args.lang}_think_{lang_think}_{args.K}{test_suffix}.json"
+
+        num_exist = -1
+        if os.path.exists(output_filename): num_exist = sum(1 for _ in open(output_filename))
+        for data_index, each_prompt in enumerate(all_prompts):
+            if data_index < num_exist: continue # skip existing results
+            responses = vmodel.generate(
+                [each_prompt],
+                sampling_params,
+                use_tqdm=True,
+                )
+            response = responses[0]
+            
             field_prompt = 'prompt'
             field_response = 'response'
-        else:  # hack
-            field_prompt = 'prompt_hack'
-            field_response = 'response_hack'
-        
-        save_data[data_index][field_prompt] = response.prompt
-        save_data[data_index][field_response] = [response.outputs[_i].text for _i in range(args.K)]
-    
-    # Save results
-    if not os.path.exists(save_dir):
-        os.makedirs(save_dir)
+            
+            save_data[data_index][field_prompt] = response.prompt
+            save_data[data_index][field_response] = [response.outputs[_i].text for _i in range(args.K)]
 
-    # Create a more descriptive filename that includes the dataset
-    dataset_name = args.dataset.split('/')[-1] if '/' in args.dataset else args.dataset
-    test_suffix = "_test" if args.test_mode else ""
-    output_filename = f"{save_dir}{args.mname.split('/')[-1]}_{dataset_name}_{args.lang}_think_{args.lang_think}_{args.K}{test_suffix}.json"
-    
-    with open(output_filename, 'w', encoding='utf-8') as f:
-        json.dump(save_data, f, ensure_ascii=True, sort_keys=False) # no indent for saving storage
-        #json.dump(save_data, f, ensure_ascii=True, indent=4, sort_keys=False)
-    
-    print(f"Results saved to {output_filename}")
+            # save as jsonlines
+            with open(output_filename, 'a', encoding='utf-8') as f:
+                f.write(json.dumps(save_data[data_index], ensure_ascii=True) + "\n")
+                f.flush()
+                os.fsync(f.fileno())
+                print(f"No {data_index}: Results saved to {output_filename}")
+
 
 
 def main():

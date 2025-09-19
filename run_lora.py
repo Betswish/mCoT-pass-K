@@ -24,9 +24,11 @@ lora_mapping = {
     "shanchen/math-500-jpsft-spanish-lora": ("shanchen/ds-limo-ja-500", "ES"),
     "shanchen/math-500-frsft-spanish-lora": ("shanchen/ds-limo-fr-250", "ES"),
     "shanchen/math-500-base-spanish-lora": ("deepseek-ai/DeepSeek-R1-Distill-Qwen-7B", "ES"),
+
     "shanchen/math-500-jpsft-french-lora": ("shanchen/ds-limo-ja-500", "FR"),
     "shanchen/math-500-sft-french-lora": ("shanchen/ds-limo-fr-250", "FR"),
     "shanchen/math-500-base-french-lora": ("deepseek-ai/DeepSeek-R1-Distill-Qwen-7B", "FR"),
+
     "shanchen/math-500-japanese-lora": ("shanchen/ds-limo-ja-full", "JA"),
     "shanchen/math-500-base-japanese-lora": ("deepseek-ai/DeepSeek-R1-Distill-Qwen-7B", "JA"),
 }
@@ -305,6 +307,12 @@ def run(args):
                 max_tokens=args.max_tokens,
                 seed=args.seed,
             )
+
+        # Create a more descriptive filename that includes the dataset
+        dataset_name = args.dataset.split('/')[-1] if '/' in args.dataset else args.dataset
+        test_suffix = "_test" if args.test_mode else ""
+        output_filename = f"{save_dir}{args.mname.split('/')[-1]}_{dataset_name}_{lang_split}_think_{lang_split}_{args.K}{test_suffix}.json"
+
         num_exist = -1
         if os.path.exists(output_filename): num_exist = sum(1 for _ in open(output_filename))
         for data_index, each_prompt in enumerate(all_prompts):
@@ -323,10 +331,6 @@ def run(args):
             save_data[data_index][field_prompt] = response.prompt
             save_data[data_index][field_response] = [response.outputs[_i].text for _i in range(args.K)]
     
-            # Create a more descriptive filename that includes the dataset
-            dataset_name = args.dataset.split('/')[-1] if '/' in args.dataset else args.dataset
-            test_suffix = "_test" if args.test_mode else ""
-            output_filename = f"{save_dir}{args.mname.split('/')[-1]}_{dataset_name}_{lang_split}_think_{lang_split}_{args.K}{test_suffix}.json"
 
             # save as jsonlines
             with open(output_filename, 'a', encoding='utf-8') as f:

@@ -16,47 +16,29 @@ done
 # Define models to use
 MODELS=(
   # Using VLLM
-  # "deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B" 
-  "deepseek-ai/DeepSeek-R1-Distill-Qwen-7B" 
-  # "deepseek-ai/DeepSeek-R1-Distill-Llama-8B"
-  # "deepseek-ai/DeepSeek-R1-Distill-Qwen-14B"
-  # "deepseek-ai/DeepSeek-R1-Distill-Qwen-32B"
-  # "deepseek-ai/DeepSeek-R1-Distill-Llama-70B"
 
-  # 'Skywork/Skywork-OR1-7B'
-  # 'Skywork/Skywork-OR1-32B'
-  
+  # "deepseek-ai/DeepSeek-R1-Distill-Qwen-7B" 
+
+  "shanchen/math-500-jpsft-spanish-lora"
+  "shanchen/math-500-frsft-spanish-lora"
+  "shanchen/math-500-base-spanish-lora"
+
+  "shanchen/math-500-jpsft-french-lora"
+  "shanchen/math-500-sft-french-lora"
+  "shanchen/math-500-base-french-lora"
+
+  "shanchen/math-500-japanese-lora"
+  "shanchen/math-500-base-japanese-lora"
 )
 
 # Define query languages for test
 LANGUAGES=(
-  # "EN"
-  # "FR"
-  # "DE"
-  # "ZH"
-  "JA"
-  # "RU"
-  # "ES"
-  # "SW"
-  # "BN"
-  # "TE"
-  # "TH"
+  "default" # Placeholder, currently not used in run_lora.py
 )
 
 # Define languages for thinking
 LANGUAGES_THINK=(
   "default" # Default language for thinking, always same as query language
-  # "EN"
-  # "FR"
-  # "DE"
-  # "ZH"
-  # "JA"
-  # "RU"
-  # "ES"
-  # "SW"
-  # "BN"
-  # "TE"
-  # "TH"
 )
 
 # Define datasets to use
@@ -65,7 +47,7 @@ DATASETS=(
   "aime_combined:problem:answer"
 
   # # GPQA dataset
-  # "shanchen/gpqa_diamond_mc_multilingual:problem:solution"
+  "shanchen/gpqa_diamond_mc_multilingual:problem:solution"
   
   # # MGSM dataset
   # "juletxara/mgsm:question:answer_number:test"
@@ -99,12 +81,12 @@ run_job() {
   MAX_TOKENS=16834
   
   # Set seed for reproducibility
-  SEED=2025
+  SEED=2026
   # SEED=0 # Set 0 for forcing greedy decoding
 
   # Set cache directory
-  # CACHE_DIR="/temp_work/ch225816/hf" # Cache dir 1
-  CACHE_DIR="/scratch/p313030/cache/" # Cache dir 2
+  CACHE_DIR="/temp_work/ch225816/hf" # Cache dir 1
+  # CACHE_DIR="/scratch/p313030/cache/" # Cache dir 2
 
   # Set K for pass@K evaluation
   K=32
@@ -128,15 +110,15 @@ run_job() {
     # Convert LANG to lowercase for config
     LANG_LOWER=$(echo "$LANG" | tr '[:upper:]' '[:lower:]')
     echo "  LANG_LOWER: $LANG_LOWER"
-    # For these datasets, we need to pass the language as the split parameter
-    # sbatch --job-name=gpu_job_xlarge \
-    # --partition=bch-gpu-xlarge --account=bch --gres=gpu:xlarge:4 --mem=256GB \
-    # --time=8:00:00 --output=logs/$MODEL/$DATASET/$LANG\_think\_$LANG_THINK\_$SEED\_$K.%j.out \
-    # --wrap="conda run -n s2 \
-    sbatch --time=4:00:00 --ntasks=1 --cpus-per-task=4 --mem=120G --partition=gpu --gpus-per-node=a100:1 \
-    --output=log/$MODEL/$DATASET/$LANG\_think\_$LANG_THINK\_$SEED\_$K.%j.out \
-    --wrap="conda run -n RAGConsis \
-    python run.py \
+    # # For these datasets, we need to pass the language as the split parameter
+    # sbatch --time=4:00:00 --ntasks=1 --cpus-per-task=4 --mem=120G --partition=gpu --gpus-per-node=a100:1 \
+    # --output=log/$MODEL/$DATASET/$LANG\_think\_$LANG_THINK\_$SEED\_$K.%j.out \
+    # --wrap="conda run -n RAGConsis \
+    sbatch --job-name=gpu_job_xlarge \
+    --partition=bch-gpu-xlarge --account=bch --gres=gpu:xlarge:1 --mem=256GB \
+    --time=8:00:00 --output=logs/$MODEL/$DATASET/$LANG\_think\_$LANG_THINK\_$SEED\_$K.%j.out \
+    --wrap="conda run -n s2 \
+    python run_lora.py \
       --mname "${MODEL}" \
       --lang "${LANG}" \
       --lang_think "${LANG_THINK}" \
