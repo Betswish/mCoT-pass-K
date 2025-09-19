@@ -16,22 +16,14 @@ done
 # Define models to use
 MODELS=(
   # Using VLLM
-  # "deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B" 
-  # "deepseek-ai/DeepSeek-R1-Distill-Qwen-7B" 
-  # "deepseek-ai/DeepSeek-R1-Distill-Llama-8B"
-  # "deepseek-ai/DeepSeek-R1-Distill-Qwen-14B"
-  # "deepseek-ai/DeepSeek-R1-Distill-Qwen-32B"
-  # "deepseek-ai/DeepSeek-R1-Distill-Llama-70B"
-
-  # 'Skywork/Skywork-OR1-7B'
-  # 'Skywork/Skywork-OR1-32B'
-
   # "shanchen/math-500-jpsft-spanish-lora"
   "shanchen/math-500-frsft-spanish-lora"
   "shanchen/math-500-base-spanish-lora"
+
   "shanchen/math-500-jpsft-french-lora"
   "shanchen/math-500-sft-french-lora"
   "shanchen/math-500-base-french-lora"
+  
   "shanchen/math-500-japanese-lora"
   # "shanchen/math-500-base-japanese-lora"
 )

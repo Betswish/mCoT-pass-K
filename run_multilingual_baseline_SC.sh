@@ -16,26 +16,25 @@ done
 # Define models to use
 MODELS=(
   # Using VLLM
-  "shanchen/math-500-jpsft-spanish-lora"
-  "shanchen/math-500-frsft-spanish-lora"
-  "shanchen/math-500-base-spanish-lora"
+  "deepseek-ai/DeepSeek-R1-Distill-Qwen-7B" 
 
-  "shanchen/math-500-jpsft-french-lora"
-  "shanchen/math-500-sft-french-lora"
-  "shanchen/math-500-base-french-lora"
-
-  "shanchen/math-500-japanese-lora"
-  "shanchen/math-500-base-japanese-lora"
+  # "shanchen/ds-limo-ja-full"
+  # "shanchen/ds-limo-fr-full" # Haven't trained
+  # "shanchen/ds-limo-es-full" # Haven't trained
+  
 )
 
 # Define query languages for test
 LANGUAGES=(
-  "default" # Placeholder, currently not used in run_lora.py
+  # "EN"
+  "FR"
+  "JA"
+  "ES"
 )
 
 # Define languages for thinking
 LANGUAGES_THINK=(
-  "default" # Default language for thinking, always same as query language
+  "default" # Default language for thinking always same as query language
 )
 
 # Define datasets to use
@@ -107,7 +106,7 @@ run_job() {
     # Convert LANG to lowercase for config
     LANG_LOWER=$(echo "$LANG" | tr '[:upper:]' '[:lower:]')
     echo "  LANG_LOWER: $LANG_LOWER"
-    # # For these datasets, we need to pass the language as the split parameter
+    # For these datasets, we need to pass the language as the split parameter
     # sbatch --time=4:00:00 --ntasks=1 --cpus-per-task=4 --mem=120G --partition=gpu --gpus-per-node=a100:1 \
     # --output=log/$MODEL/$DATASET/$LANG\_think\_$LANG_THINK\_$SEED\_$K.%j.out \
     # --wrap="conda run -n RAGConsis \
@@ -115,7 +114,7 @@ run_job() {
     --partition=bch-gpu-xlarge --account=bch --gres=gpu:xlarge:1 --mem=256GB \
     --time=8:00:00 --output=logs/$MODEL/$DATASET/$LANG\_think\_$LANG_THINK\_$SEED\_$K.%j.out \
     --wrap="conda run -n s2 \
-    python run_lora.py \
+    python run_baseline.py \
       --mname "${MODEL}" \
       --lang "${LANG}" \
       --lang_think "${LANG_THINK}" \
