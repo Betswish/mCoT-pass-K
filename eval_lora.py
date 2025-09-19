@@ -15,6 +15,7 @@ lora_mapping = {
     "shanchen/math-500-sft-french-lora": ("shanchen/ds-limo-fr-250", "FR"),
     "shanchen/math-500-base-french-lora": ("deepseek-ai/DeepSeek-R1-Distill-Qwen-7B", "FR"),
     "shanchen/math-500-japanese-lora": ("shanchen/ds-limo-ja-full", "JA"),
+    "shanchen/math-500-base-japanese-lora": ("deepseek-ai/DeepSeek-R1-Distill-Qwen-7B", "JA"),
 }
 
 mnames = [
@@ -25,6 +26,7 @@ mnames = [
     "shanchen/math-500-sft-french-lora",
     "shanchen/math-500-base-french-lora",
     "shanchen/math-500-japanese-lora",
+    "shanchen/math-500-base-japanese-lora",
     ]
 
 

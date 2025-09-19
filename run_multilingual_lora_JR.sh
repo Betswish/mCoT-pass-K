@@ -33,6 +33,7 @@ MODELS=(
   "shanchen/math-500-sft-french-lora"
   "shanchen/math-500-base-french-lora"
   "shanchen/math-500-japanese-lora"
+  "shanchen/math-500-base-japanese-lora"
 )
 
 # Define query languages for test
