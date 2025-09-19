@@ -171,7 +171,7 @@ def run(args):
     cache_dir = args.cache_dir if args.cache_dir else os.getenv("TMPDIR") 
     save_dir = f'outputs_{args.seed}/'
     if not os.path.exists(save_dir):
-        os.makedirs(save_dir)
+        os.makedirs(save_dir, exist_ok=True)
 
     # Print test mode status
     if args.test_mode:
