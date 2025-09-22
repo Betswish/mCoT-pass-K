@@ -45,6 +45,9 @@ DATASETS=(
   # # GPQA dataset
   "shanchen/gpqa_diamond_mc_multilingual:problem:solution"
   
+  # #  MMMLU (professional_medicine)
+  "mmmlu:problem:answer"
+
   # # MGSM dataset
   # "juletxara/mgsm:question:answer_number:test"
 
