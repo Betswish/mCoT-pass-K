@@ -22,9 +22,11 @@ mnames = [
     "shanchen/math-500-jpsft-spanish-lora",
     "shanchen/math-500-frsft-spanish-lora",
     "shanchen/math-500-base-spanish-lora",
+
     "shanchen/math-500-jpsft-french-lora",
     "shanchen/math-500-sft-french-lora",
     "shanchen/math-500-base-french-lora",
+
     "shanchen/math-500-japanese-lora",
     "shanchen/math-500-base-japanese-lora",
     ]
@@ -33,7 +35,7 @@ mnames = [
 datasets = [
     'aime_combined', 
     'gpqa_diamond_mc_multilingual', 
-    # 'mgsm'
+    'mmmlu'
     ]
     
 def eval_regex(response):

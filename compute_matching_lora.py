@@ -35,7 +35,7 @@ mnames = [
 datasets = [
     'aime_combined', 
     'gpqa_diamond_mc_multilingual', 
-    # 'mgsm'
+    'mmmlu'
     ]
 
 
@@ -66,7 +66,8 @@ def compute_matching(output_dir, mname, lang, dataset, lang_think, K):
         for line in f:
             if line.strip(): instances.append(json.loads(line)) # skip empty lines
     f.close()
-
+    
+    print(f"Eval: {fpath}")
     for ins in tqdm(instances):
         responses = ins['response']
         for response in responses:
