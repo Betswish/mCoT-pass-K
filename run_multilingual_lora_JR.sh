@@ -41,11 +41,14 @@ LANGUAGES_THINK=(
 # Define datasets to use
 DATASETS=(
   # # AIME combined dataset
-  "aime_combined:problem:answer"
+  # "aime_combined:problem:answer"
 
   # # GPQA dataset
   # "shanchen/gpqa_diamond_mc_multilingual:problem:solution"
   
+  # MMMLU (professional_medicine)
+  "mmmlu:problem:answer"
+
   # # MGSM dataset
   # "juletxara/mgsm:question:answer_number:test"
 
@@ -153,7 +156,7 @@ for LANG_THINK in "${LANGUAGES_THINK[@]}"; do
         IFS=':' read -r DATASET QUESTION_FIELD ANSWER_FIELD SPLIT <<< "$DATASET_INFO"
         
         # For datasets that need language config, we'll pass the language as the split parameter
-        if [[ "$DATASET" == "juletxara/mgsm" || "$DATASET" == "shanchen/aiw_hard_multilingual" || "$DATASET" == "shanchen/aime_2024_multilingual" || "$DATASET" == "shanchen/aime_2025_multilingual" || "$DATASET" == "aime_combined" || "$DATASET" == "shanchen/gpqa_diamond_mc_multilingual" ]]; then
+        if [[ "$DATASET" == "juletxara/mgsm" || "$DATASET" == "shanchen/aiw_hard_multilingual" || "$DATASET" == "shanchen/aime_2024_multilingual" || "$DATASET" == "shanchen/aime_2025_multilingual" || "$DATASET" == "aime_combined" || "$DATASET" == "mmmlu" || "$DATASET" == "shanchen/gpqa_diamond_mc_multilingual" ]]; then
           # Convert LANG to lowercase for config
           LANG_LOWER=$(echo "$LANG" | tr '[:upper:]' '[:lower:]')
           # Use the lowercase language as the split parameter

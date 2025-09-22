@@ -14,6 +14,13 @@ from random import sample
 import re
 from dotenv import load_dotenv
 from huggingface_hub import snapshot_download
+import pathlib
+from collections import defaultdict
+import random
+import csv
+
+import datasets
+
 
 
 from vllm import LLM as VLLM
@@ -54,6 +61,48 @@ def make_prompt(tokenizer, instruction, content, hack=False):
             ]
     prompt = tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=False)
     return prompt
+
+
+def convert_mmlu(split=None):
+    MMMLU = "openai/MMMLU"
+    MMLU = "CohereLabs/Global-MMLU"
+
+    formatted_data = []
+    template = "{question}\nA. {option_a}\nB. {option_b}\nC. {option_c}\nD. {option_d}\n"
+
+    if split.lower() == "en":
+        raw_data = datasets.load_dataset(MMLU, "en", split="test")
+        for example in raw_data:
+            if "professional_medicine" not in example['subject']: continue
+            formatted_data.append({
+                    "problem": template.format(
+                        question=example["question"].strip(),
+                        option_a=example["option_a"],
+                        option_b=example["option_b"],
+                        option_c=example["option_c"],
+                        option_d=example["option_d"]
+                    ),
+                    "answer": f"{example['answer']}",
+            })
+    else:
+        languages = ["AR_XY", "BN_BD", "DE_DE", "ES_LA", "FR_FR", "HI_IN", "ID_ID", "IT_IT", "JA_JP", "KO_KR", "PT_BR", "SW_KE", "YO_NG", "ZH_CN"]
+        language = next((lang for lang in languages if lang.lower().startswith(split.lower())), None)
+        raw_data = datasets.load_dataset(MMMLU, language, split="test")
+        for example in raw_data:
+            if "professional_medicine" not in example['Subject']: continue
+            formatted_data.append({
+                "problem": template.format(
+                    question=example["Question"].strip(),
+                    option_a=example["A"],
+                    option_b=example["B"],
+                    option_c=example["C"],
+                    option_d=example["D"]
+                ),
+                "answer": f"{example['Answer']}",
+            })
+
+    return formatted_data
+
 
 def load_dataset_data(dataset_name, question_field="problem", answer_field="answer", split="train", test_mode=False, max_test_examples=5):
     """
@@ -109,6 +158,13 @@ def load_dataset_data(dataset_name, question_field="problem", answer_field="answ
             raw_data = list(aime25)
         except Exception as e:
             print(f"Error loading AIME dataset with split {lang_split}: {e}")
+            raise
+    elif dataset_name.startswith("mmmlu"):
+        lang_split = split.lower()
+        try:
+            raw_data = convert_mmlu(split=lang_split)
+        except Exception as e:
+            print(f"Error loading MMMLU dataset with split {lang_split}: {e}")
             raise
     else:
         # Load a single dataset
