@@ -92,8 +92,7 @@ if __name__ == '__main__':
     for dataset in datasets:
         for mname in mnames:
             for lang in langs:
-                # try:
-                    # compute_matching(output_dir, mname, lang, dataset, lang, args.K)
-                # except Exception as e:
-                #     continue
-                compute_matching(output_dir, mname, lang, dataset, lang, args.K)
+                try:
+                    compute_matching(output_dir, mname, lang, dataset, lang, args.K)
+                except Exception as e:
+                    continue
