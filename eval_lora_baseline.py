@@ -8,9 +8,9 @@ langs = ["EN", "ES", "FR", "JA"]
 
 mnames = [
     "deepseek-ai/DeepSeek-R1-Distill-Qwen-7B"
-    # "shanchen/ds-limo-ja-full"
-    # "shanchen/ds-limo-fr-full" # Haven't trained
-    # "shanchen/ds-limo-es-full" # Haven't trained
+    "shanchen/ds-limo-ja-full"
+    "shanchen/ds-limo-fr-full" # Haven't trained
+    "shanchen/ds-limo-es-full" # Haven't trained
     ]
 
 datasets = [
@@ -89,17 +89,16 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     # Model parameters
     parser.add_argument("--output_dir", type=str, default="outputs_2026", help="Loading from which directory")
-    parser.add_argument("--K", type=int, default="1", help="Pass@K")
+    parser.add_argument("--K", type=int, nargs='+', default=[1, 5, 10], help="Pass@K")
     args = parser.parse_args()
 
     output_dir        = args.output_dir
 
-
-
-    for dataset in datasets:
-        for mname in mnames:
-            for lang in langs:
-                try:
-                    eval(output_dir, mname, lang, dataset, lang, args.K)
-                except Exception as e:
-                    continue
+    for K in args.K:
+        for dataset in datasets:
+            for mname in mnames:
+                for lang in langs:
+                    try:
+                        eval(output_dir, mname, lang, dataset, lang, K)
+                    except Exception as e:
+                        continue

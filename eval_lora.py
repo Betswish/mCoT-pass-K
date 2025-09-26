@@ -105,19 +105,20 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     # Model parameters
     parser.add_argument("--output_dir", type=str, default="outputs_2026", help="Loading from which directory")
-    parser.add_argument("--K", type=int, default="1", help="Pass@K")
+    parser.add_argument("--K", type=int, nargs='+', default=[1, 5, 10], help="Pass@K")
     args = parser.parse_args()
 
     output_dir        = args.output_dir
 
 
 
-    for dataset in datasets:
-        for mname in mnames:
-            _, lang = lora_mapping[mname]
-            _, lang_think = lora_mapping[mname]
+    for K in args.K:
+        for dataset in datasets:
+            for mname in mnames:
+                _, lang = lora_mapping[mname]
+                _, lang_think = lora_mapping[mname]
 
-            try:
-                eval(output_dir, mname, lang, dataset, lang_think, args.K)
-            except Exception as e:
-                continue
+                try:
+                    eval(output_dir, mname, lang, dataset, lang_think, K)
+                except Exception as e:
+                    continue
