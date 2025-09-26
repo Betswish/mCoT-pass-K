@@ -1,14 +1,11 @@
 import re
 import json
 from tqdm import tqdm
-import collections
 import argparse
-import torch
-from transformers import AutoModelForSequenceClassification, AutoTokenizer
 from langdetect import DetectorFactory
 DetectorFactory.seed = 0
 from langdetect import detect_langs
-from pass_at_k import pass_at_k
+
 
 lora_mapping = {
     "shanchen/math-500-jpsft-spanish-lora": ("shanchen/ds-limo-ja-500", "ES"),

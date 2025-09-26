@@ -4,30 +4,14 @@ from tqdm import tqdm
 import argparse
 from pass_at_k import pass_at_k
 
-lora_mapping = {
-    "shanchen/math-500-jpsft-spanish-lora": ("shanchen/ds-limo-ja-500", "ES"),
-    "shanchen/math-500-frsft-spanish-lora": ("shanchen/ds-limo-fr-250", "ES"),
-    "shanchen/math-500-base-spanish-lora": ("deepseek-ai/DeepSeek-R1-Distill-Qwen-7B", "ES"),
-    "shanchen/math-500-jpsft-french-lora": ("shanchen/ds-limo-ja-500", "FR"),
-    "shanchen/math-500-sft-french-lora": ("shanchen/ds-limo-fr-250", "FR"),
-    "shanchen/math-500-base-french-lora": ("deepseek-ai/DeepSeek-R1-Distill-Qwen-7B", "FR"),
-    "shanchen/math-500-japanese-lora": ("shanchen/ds-limo-ja-full", "JA"),
-    "shanchen/math-500-base-japanese-lora": ("deepseek-ai/DeepSeek-R1-Distill-Qwen-7B", "JA"),
-}
+langs = ["EN", "ES", "FR", "JA"]
 
 mnames = [
-    "shanchen/math-500-jpsft-spanish-lora",
-    "shanchen/math-500-frsft-spanish-lora",
-    "shanchen/math-500-base-spanish-lora",
-
-    "shanchen/math-500-jpsft-french-lora",
-    "shanchen/math-500-sft-french-lora",
-    "shanchen/math-500-base-french-lora",
-
-    "shanchen/math-500-japanese-lora",
-    "shanchen/math-500-base-japanese-lora",
+    "deepseek-ai/DeepSeek-R1-Distill-Qwen-7B"
+    # "shanchen/ds-limo-ja-full"
+    # "shanchen/ds-limo-fr-full" # Haven't trained
+    # "shanchen/ds-limo-es-full" # Haven't trained
     ]
-
 
 datasets = [
     'aime_combined', 
@@ -73,7 +57,7 @@ def eval(output_dir, mname, lang, dataset, lang_think, K):
     accuracy = 0
     
     # outputs_2025/math-500-jpsft-spanish-lora_aime_combined:problem:answer_ES_think_ES_1.json
-    fpath = f"{output_dir}/{mname.split('/')[1]}_{dataset}_{lang}_think_{lang_think}_32.json"
+    fpath = f"{output_dir}/{mname.split('/')[1]}_{dataset}_{lang}_think_{lang}_32.json"
     instances = []
     with open(fpath, 'r') as f:
         for line in f:
@@ -95,7 +79,7 @@ def eval(output_dir, mname, lang, dataset, lang_think, K):
         accuracy += pass_at_k(num_total_samples_n, num_correct_samples_c, K)
 
 
-    with open(f'eval_lora.csv', 'a') as f:
+    with open(f'eval_lora_baseline.csv', 'a') as f:
         # f.write(f"{mname}\t{dataset}\t{lang}\t{lang_think}\t{accuracy}/{len(instances)}={round(100*accuracy/len(instances),2)}%, {accuracy_hack}/{len(instances)}={round(100*accuracy_hack/len(instances),2)}%\n")
         f.write(f"Pass@{K}: {mname}\t{dataset}\t{lang}\t{lang_think}\t{round(100*accuracy/len(instances),1)}%\n")
     f.close()
@@ -114,10 +98,8 @@ if __name__ == '__main__':
 
     for dataset in datasets:
         for mname in mnames:
-            _, lang = lora_mapping[mname]
-            _, lang_think = lora_mapping[mname]
-
-            try:
-                eval(output_dir, mname, lang, dataset, lang_think, args.K)
-            except Exception as e:
-                continue
+            for lang in langs:
+                try:
+                    eval(output_dir, mname, lang, dataset, lang, args.K)
+                except Exception as e:
+                    continue

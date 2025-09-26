@@ -12,7 +12,6 @@ from random import sample
 import re
 from dotenv import load_dotenv
 
-
 from vllm import LLM as VLLM
 from vllm import SamplingParams
 
