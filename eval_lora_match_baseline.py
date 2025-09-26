@@ -5,7 +5,9 @@ import argparse
 from langdetect import DetectorFactory
 DetectorFactory.seed = 0
 from langdetect import detect_langs
+import os
 
+langs = ["EN", "ES", "FR", "JA"]
 
 lora_mapping = {
     "shanchen/math-500-jpsft-spanish-lora": ("shanchen/ds-limo-ja-500", "ES"),
@@ -52,10 +54,6 @@ def detect_language(text):
         return None, None
 
 def compute_matching(output_dir, mname, lang, dataset, lang_think, K):
-    # Load reward model if scoring is enabled
-    rm = None
-    rm_tokenizer = None
-
     matching_rate_norm = 0
     fpath = f"{output_dir}/{mname.split('/')[1]}_{dataset}_{lang}_think_{lang_think}_32.json"
     instances = []
@@ -69,13 +67,14 @@ def compute_matching(output_dir, mname, lang, dataset, lang_think, K):
         responses = ins['response']
         for response in responses:
             gold_answer = str(ins['answer']) if 'gpqa' not in dataset else ins['answer'][-2:-1]
-
             lang_norm_list, lang_norm = detect_language(response.split('</think>')[0])
 
             # Calculate scores if enabled
             matching_rate_norm += (lang_norm == lang_think.lower())
 
-    with open('matching_lora.csv', 'a') as f:
+    save_dir = 'results/'
+    if not os.path.exists(save_dir): os.makedirs(save_dir, exist_ok=True)
+    with open(f'{save_dir}/match_baseline.csv', 'a') as f:
         f.write(f"{mname}\t{dataset}\t{lang}\t{lang_think}\t{round(100*matching_rate_norm/(32*len(instances)),2)}%\n")
     f.close()
 
@@ -83,7 +82,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     # Model parameters
     parser.add_argument("--output_dir", type=str, default="outputs_2026", help="Loading from which directory")
-    parser.add_argument("--K", type=int, default="1", help="Pass@K")
+    parser.add_argument("--K", type=int, default="1", help="Pass@K (currently not used)")
 
     args = parser.parse_args()
 
@@ -92,9 +91,9 @@ if __name__ == '__main__':
 
     for dataset in datasets:
         for mname in mnames:
-            _, lang = lora_mapping[mname]
-            _, lang_think = lora_mapping[mname]
-            try:
-                compute_matching(output_dir, mname, lang, dataset, lang_think, args.K)
-            except Exception as e:
-                continue
+            for lang in langs:
+                # try:
+                    # compute_matching(output_dir, mname, lang, dataset, lang, args.K)
+                # except Exception as e:
+                #     continue
+                compute_matching(output_dir, mname, lang, dataset, lang, args.K)
