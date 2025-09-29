@@ -26,7 +26,7 @@ MODELS=(
 
 # Define query languages for test
 LANGUAGES=(
-  # "EN"
+  "EN"
   "FR"
   "JA"
   "ES"
