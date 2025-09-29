@@ -9,26 +9,11 @@ import os
 
 langs = ["EN", "ES", "FR", "JA"]
 
-lora_mapping = {
-    "shanchen/math-500-jpsft-spanish-lora": ("shanchen/ds-limo-ja-500", "ES"),
-    "shanchen/math-500-frsft-spanish-lora": ("shanchen/ds-limo-fr-250", "ES"),
-    "shanchen/math-500-base-spanish-lora": ("deepseek-ai/DeepSeek-R1-Distill-Qwen-7B", "ES"),
-    "shanchen/math-500-jpsft-french-lora": ("shanchen/ds-limo-ja-500", "FR"),
-    "shanchen/math-500-sft-french-lora": ("shanchen/ds-limo-fr-250", "FR"),
-    "shanchen/math-500-base-french-lora": ("deepseek-ai/DeepSeek-R1-Distill-Qwen-7B", "FR"),
-    "shanchen/math-500-japanese-lora": ("shanchen/ds-limo-ja-full", "JA"),
-    "shanchen/math-500-base-japanese-lora": ("deepseek-ai/DeepSeek-R1-Distill-Qwen-7B", "JA"),
-}
-
-mnames = [ 
-    "shanchen/math-500-jpsft-spanish-lora",
-    "shanchen/math-500-frsft-spanish-lora",
-    "shanchen/math-500-base-spanish-lora",
-    "shanchen/math-500-jpsft-french-lora",
-    "shanchen/math-500-sft-french-lora",
-    "shanchen/math-500-base-french-lora",
-    "shanchen/math-500-japanese-lora",
-    "shanchen/math-500-base-japanese-lora",
+mnames = [
+    "deepseek-ai/DeepSeek-R1-Distill-Qwen-7B"
+    "shanchen/ds-limo-ja-full"
+    "shanchen/ds-limo-fr-full" # Haven't trained
+    "shanchen/ds-limo-es-full" # Haven't trained
     ]
 
 datasets = [

@@ -19,8 +19,6 @@ from collections import defaultdict
 import random
 import csv
 
-import datasets
-
 
 
 from vllm import LLM as VLLM
@@ -63,7 +61,7 @@ def make_prompt(tokenizer, instruction, content, hack=False):
     return prompt
 
 
-def convert_mmlu(split=None):
+def convert_mmlu(subject=None, split=None):
     MMMLU = "openai/MMMLU"
     MMLU = "CohereLabs/Global-MMLU"
 
@@ -71,9 +69,9 @@ def convert_mmlu(split=None):
     template = "{question}\nA. {option_a}\nB. {option_b}\nC. {option_c}\nD. {option_d}\n"
 
     if split.lower() == "en":
-        raw_data = datasets.load_dataset(MMLU, "en", split="test")
+        raw_data = load_dataset(MMLU, "en", split="test")
         for example in raw_data:
-            if "professional_medicine" not in example['subject']: continue
+            if subject not in example['subject']: continue
             formatted_data.append({
                     "problem": template.format(
                         question=example["question"].strip(),
@@ -87,9 +85,9 @@ def convert_mmlu(split=None):
     else:
         languages = ["AR_XY", "BN_BD", "DE_DE", "ES_LA", "FR_FR", "HI_IN", "ID_ID", "IT_IT", "JA_JP", "KO_KR", "PT_BR", "SW_KE", "YO_NG", "ZH_CN"]
         language = next((lang for lang in languages if lang.lower().startswith(split.lower())), None)
-        raw_data = datasets.load_dataset(MMMLU, language, split="test")
+        raw_data = load_dataset(MMMLU, language, split="test")
         for example in raw_data:
-            if "professional_medicine" not in example['Subject']: continue
+            if subject not in example['Subject']: continue
             formatted_data.append({
                 "problem": template.format(
                     question=example["Question"].strip(),
@@ -161,8 +159,9 @@ def load_dataset_data(dataset_name, question_field="problem", answer_field="answ
             raise
     elif dataset_name.startswith("mmmlu"):
         lang_split = split.lower()
+        subject = dataset_name.split('-')[-1]
         try:
-            raw_data = convert_mmlu(split=lang_split)
+            raw_data = convert_mmlu(subject=subject, split=lang_split)
         except Exception as e:
             print(f"Error loading MMMLU dataset with split {lang_split}: {e}")
             raise

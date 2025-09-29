@@ -46,8 +46,12 @@ DATASETS=(
   # # GPQA dataset
   "shanchen/gpqa_diamond_mc_multilingual:problem:solution"
   
-  # #  MMMLU (professional_medicine)
-  "mmmlu:problem:answer"
+  # # MMMLU (professional_medicine)
+  "mmmlu-professional_medicine:problem:answer"
+
+  # MMMLU (college_mathematics)
+  "mmmlu-college_mathematics:problem:answer"
+
   # # MGSM dataset
   # "juletxara/mgsm:question:answer_number:test"
 
@@ -114,9 +118,9 @@ run_job() {
     # --output=log/$MODEL/$DATASET/$LANG\_think\_$LANG_THINK\_$SEED\_$K.%j.out \
     # --wrap="conda run -n RAGConsis \
     sbatch --job-name=gpu_job_xlarge \
-    --partition=bch-gpu-xlarge --account=bch --gres=gpu:xlarge:1 --mem=256GB \
+    --partition=bch-gpu-pe --account=bch --gres=gpu:large:1 --mem=256GB \
     --time=8:00:00 --output=logs/$MODEL/$DATASET/$LANG\_think\_$LANG_THINK\_$SEED\_$K.%j.out \
-    --wrap="conda run -n s2 \
+    --wrap="conda run -n verl \
     python run_lora.py \
       --mname "${MODEL}" \
       --lang "${LANG}" \

@@ -45,8 +45,11 @@ DATASETS=(
   # # GPQA dataset
   "shanchen/gpqa_diamond_mc_multilingual:problem:solution"
   
-  # #  MMMLU (professional_medicine)
-  "mmmlu:problem:answer"
+  # # MMMLU (professional_medicine)
+  "mmmlu-professional_medicine:problem:answer"
+
+  # # MMMLU (college_mathematics)
+  "mmmlu-college_mathematics:problem:answer"
 
   # # MGSM dataset
   # "juletxara/mgsm:question:answer_number:test"
