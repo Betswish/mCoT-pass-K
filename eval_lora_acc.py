@@ -33,7 +33,8 @@ mnames = [
 datasets = [
     'aime_combined', 
     'gpqa_diamond_mc_multilingual', 
-    'mmmlu'
+    'mmmlu-professional_medicine',
+    'mmmlu-college_mathematics',
     ]
     
 def eval_regex(response):
