@@ -19,7 +19,7 @@ MODELS=(
   "deepseek-ai/DeepSeek-R1-Distill-Qwen-7B" 
 
   # "shanchen/ds-limo-ja-full"
-  # "shanchen/ds-limo-fr-full" # Haven't trained
+  # "shanchen/ds-limo-fr-250" # Haven't trained
   # "shanchen/ds-limo-es-full" # Haven't trained
   
 )

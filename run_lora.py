@@ -36,6 +36,7 @@ lora_mapping = {
 
     "shanchen/math-500-japanese-lora": ("shanchen/ds-limo-ja-full", "JA"),
     "shanchen/math-500-base-japanese-lora": ("deepseek-ai/DeepSeek-R1-Distill-Qwen-7B", "JA"),
+    "shanchen/math-500-spanish-lora": {"shanchen/ds-limo-es-full", "ES"},
 }
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')

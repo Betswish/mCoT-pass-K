@@ -16,6 +16,7 @@ done
 # Define models to use
 MODELS=(
   # Using VLLM
+  "shanchen/math-500-spanish-lora"
   "shanchen/math-500-jpsft-spanish-lora"
   "shanchen/math-500-frsft-spanish-lora"
   "shanchen/math-500-base-spanish-lora"
